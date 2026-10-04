@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desertification in India: Geographical Changes & Effects (2000–Present)</title>
+  
+  <!-- Google Fonts: Syne (Editorial Display), Inter (Clean Telemetry), JetBrains Mono (GIS Coordinates) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- =========================================================================
+       OPENING SAND FLOW INTRO CURTAIN (auto-dismisses after ~2s, click to skip)
+       ========================================================================= -->
+  <div id="sand-intro-overlay" class="sand-intro-overlay">
+    <canvas id="sand-intro-canvas"></canvas>
+
+    <div class="sand-intro-card" onclick="event.stopPropagation()">
+      <div class="sand-compass-spin">🧭</div>
+
+      <div class="sand-intro-badge">🛰️ BHUMI GIS RESEARCH PORTAL • INITIALISING</div>
+
+      <h2 class="sand-intro-title">Desertification in India</h2>
+      <p class="sand-intro-sub">
+        An interactive geospatial investigation into how 97.85 million hectares — <strong>29.77%</strong> of the national landmass — are shaped by desertification, erosion, and land degradation forces from 2000 to present.
+      </p>
+
+      <div class="sand-progress-track">
+        <div id="sand-progress-fill" class="sand-progress-fill"></div>
+      </div>
+
+      <div class="sand-intro-footer">
+        <span id="sand-status-text" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">Calibrating satellite vectors...</span>
+        <button id="skip-intro-btn" class="skip-intro-btn">Enter Portal →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL Leaf Flow Canvas (fades in as you scroll into Restoration & End sections) -->
+  <canvas id="leaf-flow-canvas"></canvas>
+
+  <!-- Scroll Progress Indicator -->
+  <div id="scroll-progress-bar"></div>
+
+  <!-- Ambient Shimmer & Particles -->
+  <div class="dust-overlay"></div>
+  <canvas id="ambient-canvas"></canvas>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Sticky Glassmorphic Navigation Header -->
+  <header class="nav-header">
+    <div class="nav-brand">
+      <div class="nav-logo-icon">IN</div>
+      <div class="nav-brand-text">BHUMI <span>GIS</span> • Desertification in India</div>
+    </div>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link">Overview</a></li>
+        <li><a href="#gis-map" class="nav-link">GIS Heatmap</a></li>
+        <li><a href="#trends" class="nav-link">Trends Graph</a></li>
+        <li><a href="#drivers" class="nav-link">Drivers</a></li>
+        <li><a href="#soil-profile" class="nav-link">Soil Profile</a></li>
+        <li><a href="#vulnerability" class="nav-link">Vulnerability Matrix</a></li>
+        <li><a href="#timeline" class="nav-link">Timeline</a></li>
+        <li><a href="#cases" class="nav-link">Case Studies</a></li>
+        <li><a href="#restoration" class="nav-link">Simulator</a></li>
+        <li><a href="#eco-game" class="nav-link">🎮 Eco-Game</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-controls">
+      <button id="audio-toggle" class="audio-toggle-btn" title="Toggle Procedural Desert Wind & Rain Audio">
+        <div class="sound-wave">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="audio-label">Atmosphere: OFF</span>
+      </button>
+      <a href="#restoration" class="btn btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.85rem;">LDN Calc</a>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       SECTION 1: HERO & INTERACTIVE OVERVIEW
+       ========================================================================= -->
+  <section id="hero" class="hero-section" style="position: relative; overflow: hidden;">
+    <!-- Continuous ambient sand stream on hero background -->
+    <canvas id="hero-sand-canvas"></canvas>
+
+    <div class="hero-content" data-speed="-0.15">
+      <div class="hero-tagline">
+        <span class="badge badge-rust">⚠️ 29.77% of India's Total Geographical Area (97.85M ha) Under Degradation</span>
+      </div>
+
+      <h1 class="hero-title">
+        Desertification in India: <br>
+        <span class="typewriter-container">
+          <span id="typewriter-text" class="typewriter-text"></span><span class="typewriter-cursor">|</span>
+        </span>
+      </h1>
+
+      <p class="hero-desc">
+        A geospatial and ecological investigation into how anthropogenic stress, shifting monsoon dynamics, and soil erosion are reshaping the subcontinent's landscapes—from the shifting sands of the Thar to the cryospheric cold deserts of Ladakh.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#gis-map" class="btn btn-primary">
+          <span>🗺️ Explore Interactive GIS Map</span>
+        </a>
+        <a href="#restoration" class="btn btn-secondary">
+          <span>🌿 Launch Restoration Simulator</span>
+        </a>
+        <a href="#trends" class="btn btn-rust">
+          <span>📊 Decadal Analytics Graph</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       LIVE TELEMETRY COUNTERS BANNER
+       ========================================================================= -->
+  <div class="telemetry-banner">
+    <div class="telemetry-card">
+      <div class="telemetry-val">
+        <span data-counter-target="97.85" data-counter-decimals="2">0.00</span>
+        <span class="telemetry-unit">M ha</span>
+      </div>
+      <div class="telemetry-label">Degraded Land Area</div>
+      <div class="telemetry-sub">Total land under desertification & degradation (ISRO SAC 2021)</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-val">
+        <span data-counter-target="29.77" data-counter-decimals="2">0.00</span>
+        <span class="telemetry-unit">%</span>
+      </div>
+      <div class="telemetry-label">National Land Surface</div>
+      <div class="telemetry-sub">Proportion of India's Total Geographical Area (TGA) compromised</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-val">
+        <span data-counter-target="82" data-counter-decimals="0">0</span>
+        <span class="telemetry-unit">%</span>
+      </div>
+      <div class="telemetry-label">Concentration in 8 States</div>
+      <div class="telemetry-sub">RJ, MH, GJ, KA, JH, OD, MP, and TG account for bulk of degradation</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-val">
+        <span data-counter-target="26.0" data-counter-decimals="1">0.0</span>
+        <span class="telemetry-unit">M ha</span>
+      </div>
+      <div class="telemetry-label">2030 LDN Target</div>
+      <div class="telemetry-sub">India's Bonn Challenge & UNCCD COP14 restoration commitment</div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SECTION 2: GIS HEATMAP OVERLAY & INTERACTIVE INDIA MAP
+       ========================================================================= -->
+  <section id="gis-map" class="gis-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🛰️ Spatial Telemetry & Satellite Cartography</span>
+      <h2>National GIS Desertification Heatmap</h2>
+      <p>
+        Explore multi-spectral geospatial data compiled from ISRO Space Applications Centre (SAC) Atlases. Toggle erosion layers to inspect how water runoff, wind scouring, salinity, and vegetative loss vary across bio-climatic zones.
+      </p>
+    </div>
+
+    <div class="gis-container">
+      <div class="gis-map-wrapper">
+        <!-- Layer Toggles -->
+        <div class="gis-layers-bar">
+          <button class="layer-btn active" data-layer="all">
+            <span class="layer-indicator" style="background: var(--sand-gold);"></span>
+            All Degradation (29.77%)
+          </button>
+          <button class="layer-btn layer-water" data-layer="water">
+            <span class="layer-indicator" style="background: #C85A32;"></span>
+            Water Erosion (11.01%)
+          </button>
+          <button class="layer-btn layer-wind" data-layer="wind">
+            <span class="layer-indicator" style="background: #E0C097;"></span>
+            Wind Erosion (5.46%)
+          </button>
+          <button class="layer-btn layer-veg" data-layer="veg">
+            <span class="layer-indicator" style="background: #2E7D32;"></span>
+            Vegetation Loss (9.63%)
+          </button>
+          <button class="layer-btn layer-saline" data-layer="saline">
+            <span class="layer-indicator" style="background: #0288D1;"></span>
+            Salinization (1.12%)
+          </button>
+        </div>
+
+        <!-- High Precision SVG Vector India Map -->
+        <svg class="india-map-svg" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Degradation Overlay Gradients -->
+            <radialGradient id="grad-wind" cx="40%" cy="30%" r="45%">
+              <stop offset="0%" stop-color="#E0C097" stop-opacity="0.85"/>
+              <stop offset="70%" stop-color="#C49E69" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#E0C097" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="grad-water" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#C85A32" stop-opacity="0.85"/>
+              <stop offset="70%" stop-color="#9E3612" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#C85A32" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="grad-veg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#2E7D32" stop-opacity="0.85"/>
+              <stop offset="80%" stop-color="#1B5E20" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#2E7D32" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="grad-saline" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#0288D1" stop-opacity="0.85"/>
+              <stop offset="80%" stop-color="#01579B" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#0288D1" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+
+          <!-- Base State Vector Outlines -->
+          <!-- Ladakh & Jammu-Kashmir -->
+          <path class="state-path" data-state="LA" d="M 230,20 L 290,15 L 340,40 L 375,90 L 330,135 L 280,130 L 250,95 L 210,80 L 195,50 Z">
+            <title>Ladakh & Jammu-Kashmir (Cold Desert Basin)</title>
+          </path>
+
+          <!-- Punjab & Haryana -->
+          <path class="state-path" data-state="PB" d="M 195,95 L 245,100 L 255,145 L 225,185 L 180,150 Z">
+            <title>Punjab & Haryana (Canal Basin & Saline Alkalinity)</title>
+          </path>
+
+          <!-- Rajasthan (Thar Basin) -->
+          <path class="state-path" data-state="RJ" d="M 120,160 L 185,145 L 225,185 L 215,265 L 175,295 L 115,260 L 95,210 Z">
+            <title>Rajasthan (Thar Desert Basin - 62.9% Degraded)</title>
+          </path>
+
+          <!-- Gujarat (Rann of Kutch & Saurashtra) -->
+          <path class="state-path" data-state="GJ" d="M 75,255 L 135,270 L 165,315 L 155,370 L 110,380 L 80,345 L 55,290 Z">
+            <title>Gujarat (Rann of Kutch & Coastal Salinity)</title>
+          </path>
+
+          <!-- Uttar Pradesh -->
+          <path class="state-path" data-state="PB" d="M 235,145 L 340,165 L 390,210 L 335,270 L 260,240 L 230,185 Z">
+            <title>Uttar Pradesh (Indo-Gangetic Basin)</title>
+          </path>
+
+          <!-- Madhya Pradesh (Central Highlands & Chambal) -->
+          <path class="state-path" data-state="MP" d="M 185,275 L 270,250 L 345,280 L 350,350 L 255,375 L 180,335 Z">
+            <title>Madhya Pradesh (Chambal Ravines & Malwa)</title>
+          </path>
+
+          <!-- Maharashtra (Deccan Rainshadow) -->
+          <path class="state-path" data-state="MH" d="M 155,370 L 255,375 L 300,430 L 265,510 L 185,490 L 150,425 Z">
+            <title>Maharashtra (Deccan Semi-Arid Plateau - 44.9% Degraded)</title>
+          </path>
+
+          <!-- Karnataka (North Deccan & Tungabhadra) -->
+          <path class="state-path" data-state="KA" d="M 185,490 L 250,510 L 255,600 L 205,620 L 175,540 Z">
+            <title>Karnataka (North Deccan Plateau)</title>
+          </path>
+
+          <!-- Jharkhand (Chota Nagpur) -->
+          <path class="state-path" data-state="JH" d="M 350,265 L 420,270 L 430,340 L 365,345 Z">
+            <title>Jharkhand (Mining Spoil & Forest Degradation)</title>
+          </path>
+
+          <!-- Odisha (Eastern Ghats) -->
+          <path class="state-path" data-state="OD" d="M 345,345 L 430,345 L 415,445 L 330,420 Z">
+            <title>Odisha (Eastern Ghats Water Runoff)</title>
+          </path>
+
+          <!-- Southern Peninsula (TN & Kerala) -->
+          <path class="state-path" data-state="KA" d="M 205,620 L 255,600 L 275,650 L 235,690 L 210,665 Z">
+            <title>Southern Peninsula</title>
+          </path>
+
+          <!-- Eastern / Northeast Strip -->
+          <path class="state-path" data-state="JH" d="M 435,220 L 520,210 L 565,245 L 530,320 L 460,310 Z">
+            <title>Northeast (Jhum Shifting Cultivation Zones)</title>
+          </path>
+
+          <!-- GIS Heatmap Degradation Overlays -->
+          <!-- 1. Wind Erosion Zone (Thar & Kachchh) -->
+          <path class="degradation-zone zone-wind" data-type="wind" d="M 100,185 Q 160,170 205,225 Q 185,290 120,285 Z"/>
+          <circle class="degradation-zone zone-wind" data-type="wind" cx="150" cy="220" r="55" filter="url(#glow-filter)"/>
+
+          <!-- 2. Water Erosion Zone (Deccan, Western Ghats, Shivaliks) -->
+          <path class="degradation-zone zone-water" data-type="water" d="M 190,400 Q 260,390 280,470 Q 230,520 180,480 Z"/>
+          <circle class="degradation-zone zone-water" data-type="water" cx="230" cy="450" r="60" filter="url(#glow-filter)"/>
+          <path class="degradation-zone zone-water" data-type="water" d="M 235,115 Q 280,120 300,140 Q 265,155 235,130 Z"/>
+
+          <!-- 3. Cold Desert Frost Erosion (Ladakh) -->
+          <path class="degradation-zone zone-wind" data-type="wind" d="M 250,35 Q 330,40 345,100 Q 275,115 240,75 Z" filter="url(#glow-filter)"/>
+
+          <!-- 4. Salinization Zone (Canal tracts & Rann) -->
+          <circle class="degradation-zone zone-saline" data-type="saline" cx="105" cy="290" r="38" filter="url(#glow-filter)"/>
+          <circle class="degradation-zone zone-saline" data-type="saline" cx="215" cy="140" r="28" filter="url(#glow-filter)"/>
+
+          <!-- 5. Vegetation Degradation Zone (Jharkhand/Central) -->
+          <circle class="degradation-zone zone-veg" data-type="veg" cx="390" cy="305" r="45" filter="url(#glow-filter)"/>
+          <circle class="degradation-zone zone-veg" data-type="veg" cx="490" cy="260" r="35" filter="url(#glow-filter)"/>
+        </svg>
+
+        <div class="map-extras">
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-color" style="background: #E0C097;"></span> Wind (5.46% TGA)</div>
+            <div class="legend-item"><span class="legend-color" style="background: #C85A32;"></span> Water Erosion (11.01%)</div>
+            <div class="legend-item"><span class="legend-color" style="background: #2E7D32;"></span> Vegetative Loss (9.63%)</div>
+            <div class="legend-item"><span class="legend-color" style="background: #0288D1;"></span> Salinity (1.12%)</div>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">
+            Click any state to inspect ISRO SAC telemetry
+          </div>
+        </div>
+      </div>
+
+      <!-- GIS Inspector Telemetry Panel -->
+      <aside class="gis-inspector">
+        <div class="inspector-header">
+          <div class="inspector-region-tag" id="inspector-tag">Arid Western Zone & Aravalli Fringe</div>
+          <h3 class="inspector-region-title" id="inspector-title">Rajasthan (Thar Desert Basin)</h3>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <span class="badge badge-rust" id="inspector-severity">Critical / High</span>
+          </div>
+        </div>
+
+        <div class="inspector-stats-grid">
+          <div class="inspector-stat-box">
+            <div class="inspector-stat-label">Total State Area</div>
+            <div class="inspector-stat-val" id="inspector-tga">34.22 Million ha</div>
+          </div>
+          <div class="inspector-stat-box">
+            <div class="inspector-stat-label">Degraded Land Area</div>
+            <div class="inspector-stat-val" id="inspector-degraded" style="color: #FF8A65;">62.92% (21.53M ha)</div>
+          </div>
+        </div>
+
+        <div class="inspector-stat-box">
+          <div class="inspector-stat-label">Dominant Desertification Vector</div>
+          <div class="inspector-stat-val" id="inspector-driver" style="font-size: 1rem; color: var(--sand-gold);">
+            Wind Erosion (Dune Drift) & Salinity
+          </div>
+        </div>
+
+        <div>
+          <div class="inspector-breakdown-title">Driver Composition Breakdown</div>
+          
+          <div class="breakdown-bar-item">
+            <div class="breakdown-bar-labels">
+              <span>Wind Erosion (Barchan migration)</span>
+              <span id="val-wind">71%</span>
+            </div>
+            <div class="breakdown-progress-track">
+              <div id="bar-wind" class="breakdown-progress-fill" style="width: 71%; background: #E0C097;"></div>
+            </div>
+          </div>
+
+          <div class="breakdown-bar-item">
+            <div class="breakdown-bar-labels">
+              <span>Water Sheet & Gully Erosion</span>
+              <span id="val-water">14%</span>
+            </div>
+            <div class="breakdown-progress-track">
+              <div id="bar-water" class="breakdown-progress-fill" style="width: 14%; background: #C85A32;"></div>
+            </div>
+          </div>
+
+          <div class="breakdown-bar-item">
+            <div class="breakdown-bar-labels">
+              <span>Vegetation / Scrub Depletion</span>
+              <span id="val-veg">10%</span>
+            </div>
+            <div class="breakdown-progress-track">
+              <div id="bar-veg" class="breakdown-progress-fill" style="width: 10%; background: #2E7D32;"></div>
+            </div>
+          </div>
+
+          <div class="breakdown-bar-item">
+            <div class="breakdown-bar-labels">
+              <span>Soil Salinization & Hardpan</span>
+              <span id="val-saline">5%</span>
+            </div>
+            <div class="breakdown-progress-track">
+              <div id="bar-saline" class="breakdown-progress-fill" style="width: 5%; background: #0288D1;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspector-initiatives">
+          <h5>Active State Mitigation Framework:</h5>
+          <p id="inspector-initiatives">
+            Great Green Wall of Aravalli (1,400km green belt), CAZRI shelterbelts, Khejri agroforestry, sand dune fixation using Cenchrus ciliaris.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 3: DECADAL GEOSPATIAL TRENDS GRAPH (2000–PRESENT)
+       ========================================================================= -->
+  <section id="trends" class="satellite-section">
+    <div class="section-header">
+      <span class="section-eyebrow">📊 Multi-Decadal Geospatial Analytics</span>
+      <h2>Decadal Land Degradation & Canopy Trends (2000–Present)</h2>
+      <p>
+        Time-series telemetry compiled from ISRO Space Applications Centre (SAC) Atlases. Examine how degraded area trajectory, vegetative canopy (NDVI), and land surface temperature have evolved across key vulnerable regions.
+      </p>
+    </div>
+
+    <!-- Regional Biome Selector Tabs -->
+    <div class="sat-location-tabs">
+      <button class="sat-tab-btn trends-tab-btn active" data-region="thar">
+        🐪 Thar Desert Fringe (Shelterbelts vs Dunes)
+      </button>
+      <button class="sat-tab-btn trends-tab-btn" data-region="sambhar">
+        🧂 Sambhar Salt Lake (Shoreline Desiccation)
+      </button>
+      <button class="sat-tab-btn trends-tab-btn" data-region="deccan">
+        🌾 Deccan Plateau (Marathwada Gully Watersheds)
+      </button>
+      <button class="sat-tab-btn trends-tab-btn" data-region="ladakh">
+        ❄️ Ladakh Cold Desert (Glacial Snout Retreat & Stupas)
+      </button>
+    </div>
+
+    <!-- Analytics Graph Dashboard Grid -->
+    <div class="trends-dashboard">
+      <!-- Main Scientific Chart Card -->
+      <div class="trends-chart-card">
+        <canvas id="trends-chart-canvas"></canvas>
+      </div>
+
+      <!-- Regional Inspection & Field Photographic Card -->
+      <div class="trends-meta-card">
+        <div class="trends-img-container">
+          <img id="trends-meta-img" src="assets/satellite_thar_greening.jpg" alt="Satellite Field Telemetry" class="trends-meta-img">
+          <div id="trends-img-caption" class="trends-img-badge">Orbital Multi-Spectral View: Indira Gandhi Canal Green Belt</div>
+        </div>
+
+        <div id="trends-metrics-grid" class="trends-metrics-grid">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="trends-narrative-box">
+          <p id="trends-narrative-text">
+            Multi-decadal satellite telemetry reveals a persistent eastward expansion of shifting barchan sand dunes along non-sheltered tracts. However, shelterbelt afforestation along the Indira Gandhi Canal has successfully stabilized over 180,000 hectares of previously active dune corridors.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4: GEOGRAPHICAL DRIVERS (3D TILT CARDS)
+       ========================================================================= -->
+  <section id="drivers" class="drivers-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🌪️ Physical & Anthropogenic Vectors</span>
+      <h2>Primary Geographical Drivers</h2>
+      <p>
+        According to the ISRO Space Applications Centre Desertification Atlas, land degradation in India is governed by four primary morphological mechanisms. Hover over the cards to inspect 3D physical models.
+      </p>
+    </div>
+
+    <div class="drivers-grid">
+      <!-- Driver 1: Water Erosion -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: #FF7043;">11.01%</span>
+        <div class="driver-icon-box driver-icon-water">🌊</div>
+        <h3>Water Sheet & Gully Erosion</h3>
+        <p>
+          High-intensity monsoon downpours strip topsoil from deforested undulating slopes across the Shivalik foothills, Eastern Ghats, and Central Highlands. Unchecked runoff carves steep ravines, causing irreversible loss of topsoil nutrients.
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>36.19M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Chambal & Ghats</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver 2: Wind Erosion -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: var(--sand-gold);">5.46%</span>
+        <div class="driver-icon-box driver-icon-wind">🌪️</div>
+        <h3>Wind Scouring & Dune Drift</h3>
+        <p>
+          In arid western Rajasthan, Gujarat, and southwest Haryana, dry convective summer gales lift loose sand particles, eroding arable seedbeds and burying transport corridors with shifting barchan dunes.
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>17.95M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Thar Desert</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver 3: Vegetation Degradation -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: #81C784;">9.63%</span>
+        <div class="driver-icon-box driver-icon-veg">🌲</div>
+        <h3>Vegetative Depletion & Overgrazing</h3>
+        <p>
+          Unregulated grazing pressure, excessive fuelwood harvesting, and forest canopy thinning strip the natural vegetative mantle, exposing delicate humus to solar radiation, crusting, and micro-climate desiccation.
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>31.66M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Central & NE India</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver 4: Salinization -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: #4FC3F7;">1.12%</span>
+        <div class="driver-icon-box driver-icon-saline">🧂</div>
+        <h3>Canal Salinization & Hardpans</h3>
+        <p>
+          Canal flood irrigation in poorly drained flat plains leads to high water tables, bringing subterranean mineral salts to the root zone via capillary action, forming barren white alkaline crusts (Reh & Kallar).
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>3.68M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Punjab & IGNP Canal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver 5: Frost Weathering -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: #80DEEA;">1.04%</span>
+        <div class="driver-icon-box driver-icon-frost">❄️</div>
+        <h3>Frost Shattering & Scree Slumping</h3>
+        <p>
+          Diurnal freeze-thaw cycles in high-altitude Trans-Himalayan valleys fracture rocks into loose scree gravel, while low relative humidity and intense UV radiation prevent natural organic soil formation.
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>3.42M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Ladakh Cryosphere</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver 6: Anthropogenic Mining & Urban Sprawl -->
+      <div class="driver-card" data-tilt data-tilt-max="14">
+        <span class="driver-stat-badge" style="color: #BA68C8;">1.45%</span>
+        <div class="driver-icon-box driver-icon-settle">⛏️</div>
+        <h3>Open-Cast Mining & Soil Sealing</h3>
+        <p>
+          Surface quarrying in mineral belts (Jharkhand, Odisha, Rajasthan Aravalli) generates vast infertile overburden dumps, while urban concrete expansion permanently seals fertile prime agricultural land.
+        </p>
+        <div class="driver-substats">
+          <div class="driver-substat-col">
+            <span>AFFECTED AREA</span>
+            <span>4.85M Hectares</span>
+          </div>
+          <div class="driver-substat-col">
+            <span>KEY REGION</span>
+            <span>Mining & Peri-Urban</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4B: SOIL HORIZON DEGRADATION INSPECTOR
+       ========================================================================= -->
+  <section id="soil-profile" class="soil-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🔬 Pedological & Sub-surface Analysis</span>
+      <h2>Soil Horizon Degradation: Healthy vs. Desertified</h2>
+      <p>
+        Land degradation does not merely occur at the surface; it strips subterranean pedological structure. Contrast a biologically active organic profile with an eroded, hardpan-cemented desertified profile.
+      </p>
+    </div>
+
+    <div class="soil-comparison-grid">
+      <!-- Column 1: Healthy Profile -->
+      <div class="soil-column-card healthy">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <h3 style="color: #81C784;">🌱 Healthy Regenerated Profile</h3>
+          <span class="badge badge-green">SOC: 0.85% • Porous</span>
+        </div>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+          Shelterbelts and vegetative cover maintain active humus formation, deep root aeration, and high infiltration capacity.
+        </p>
+
+        <div class="soil-horizon-stack">
+          <div class="horizon-layer layer-o-healthy">
+            <div>
+              <strong style="color: #a5d6a7;">O Horizon (Humus & Decomposing Litter)</strong>
+              <div style="font-size: 0.75rem; color: #c8e6c9;">Depth: 0–5 cm • Active microbial fungal network</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #81c784;">100% Intact</span>
+          </div>
+
+          <div class="horizon-layer layer-a-healthy">
+            <div>
+              <strong style="color: #dcedc8;">A Horizon (Organic-Mineral Topsoil)</strong>
+              <div style="font-size: 0.75rem; color: #f1f8e9;">Depth: 5–25 cm • High granular porosity, earthworm channels</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #aed581;">High Yield</span>
+          </div>
+
+          <div class="horizon-layer layer-b-healthy">
+            <div>
+              <strong style="color: #ffe0b2;">B Horizon (Subsoil Illuviation Zone)</strong>
+              <div style="font-size: 0.75rem; color: #fff3e0;">Depth: 25–65 cm • Clay-mineral buffer holding deep moisture</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #ffb74d;">Balanced</span>
+          </div>
+
+          <div class="horizon-layer layer-c-healthy">
+            <div>
+              <strong style="color: #cfd8dc;">C Horizon (Weathered Substratum)</strong>
+              <div style="font-size: 0.75rem; color: #eceff1;">Depth: 65+ cm • Permeable weathered basalt / gneiss</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #90a4ae;">Recharging</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Desertified Profile -->
+      <div class="soil-column-card degraded">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <h3 style="color: #FF7043;">🏜️ Desertified & Crusted Profile</h3>
+          <span class="badge badge-rust">SOC: 0.14% • Impermeable</span>
+        </div>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+          Persistent wind shear, overgrazing, and solar desiccation blow away organic fines, leaving a sterile compacted floor.
+        </p>
+
+        <div class="soil-horizon-stack">
+          <div class="horizon-layer layer-o-degraded">
+            <div>
+              <strong style="color: #ef9a9a;">O Horizon (Organic Humus)</strong>
+              <div style="font-size: 0.75rem; color: #ffebee;">WIPED OUT • Wind scoured & UV oxidized to atmosphere</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #e57373;">0% Loss</span>
+          </div>
+
+          <div class="horizon-layer layer-a-degraded">
+            <div>
+              <strong style="color: #ffab91;">A Horizon (Desiccated Surface Crust)</strong>
+              <div style="font-size: 0.75rem; color: #fbe9e7;">Depth: &lt;3 cm • High surface tension, water runoff coeff > 80%</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #ff8a65;">Hardpan</span>
+          </div>
+
+          <div class="horizon-layer layer-b-degraded">
+            <div>
+              <strong style="color: #ffccbc;">B Horizon (Saline Hardpan / Caliche)</strong>
+              <div style="font-size: 0.75rem; color: #fbe9e7;">Depth: 10–40 cm • Dense calcium carbonate / salt cementation</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #ff7043;">Alkaline</span>
+          </div>
+
+          <div class="horizon-layer layer-c-degraded">
+            <div>
+              <strong style="color: #cfd8dc;">C Horizon (Dry Fractured Regolith)</strong>
+              <div style="font-size: 0.75rem; color: #eceff1;">Depth: 40+ cm • Severed from rainwater percolation</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #e53935;">Depleted</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4C: NATIONAL VULNERABILITY MATRIX (TOP 10 DEGRADED DISTRICTS)
+       ========================================================================= -->
+  <section id="vulnerability" class="districts-section">
+    <div class="section-header">
+      <span class="section-eyebrow">📊 ISRO SAC District-Level Census</span>
+      <h2>Top 10 Most Degraded Districts in India</h2>
+      <p>
+        Official geospatial inventory of districts facing the highest proportion of land degradation relative to their Total Geographical Area (TGA), cross-referenced with primary morphological vectors.
+      </p>
+    </div>
+
+    <div class="table-responsive-box">
+      <table class="districts-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>District</th>
+            <th>State</th>
+            <th>Total Area (ha)</th>
+            <th>Degraded Area (ha)</th>
+            <th>% Degraded</th>
+            <th>Primary Degradation Vector</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rank-badge">01</span></td>
+            <td><strong style="color: #fff;">Jaisalmer</strong></td>
+            <td>Rajasthan</td>
+            <td>3,840,100 ha</td>
+            <td>3,548,252 ha</td>
+            <td><strong class="vuln-high">92.40%</strong></td>
+            <td>Shifting Barchan Dunes & Wind Abrasion</td>
+            <td><span class="badge badge-rust">Hyper-Critical</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">02</span></td>
+            <td><strong style="color: #fff;">Barmer</strong></td>
+            <td>Rajasthan</td>
+            <td>2,838,700 ha</td>
+            <td>2,106,315 ha</td>
+            <td><strong class="vuln-high">74.20%</strong></td>
+            <td>Wind Scour & Saline Sodic Depressions</td>
+            <td><span class="badge badge-rust">Critical</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">03</span></td>
+            <td><strong style="color: #fff;">Palamu</strong></td>
+            <td>Jharkhand</td>
+            <td>871,500 ha</td>
+            <td>623,122 ha</td>
+            <td><strong class="vuln-high">71.50%</strong></td>
+            <td>Open-Cast Coal Mining & Forest Canopy Loss</td>
+            <td><span class="badge badge-rust">Severe</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">04</span></td>
+            <td><strong style="color: #fff;">Leh & Kargil</strong></td>
+            <td>Ladakh</td>
+            <td>4,528,000 ha</td>
+            <td>3,119,792 ha</td>
+            <td><strong class="vuln-high">68.90%</strong></td>
+            <td>Cryospheric Frost Shattering & Glacial Retreat</td>
+            <td><span class="badge badge-rust">Alpine Stress</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">05</span></td>
+            <td><strong style="color: #fff;">Jodhpur</strong></td>
+            <td>Rajasthan</td>
+            <td>2,285,000 ha</td>
+            <td>1,398,420 ha</td>
+            <td><strong class="vuln-high">61.20%</strong></td>
+            <td>Dune Migration & Subsoil Caliche Hardpans</td>
+            <td><span class="badge badge-rust">High</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">06</span></td>
+            <td><strong style="color: #fff;">Kutch</strong></td>
+            <td>Gujarat</td>
+            <td>4,565,200 ha</td>
+            <td>2,652,381 ha</td>
+            <td><strong class="vuln-high">58.10%</strong></td>
+            <td>Coastal Salinity Ingress & Rann Wind Stripping</td>
+            <td><span class="badge badge-rust">High</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">07</span></td>
+            <td><strong style="color: #fff;">Anantapur</strong></td>
+            <td>Andhra Pradesh</td>
+            <td>1,913,000 ha</td>
+            <td>1,084,671 ha</td>
+            <td><strong class="vuln-high">56.70%</strong></td>
+            <td>Severe Sheet Wash & Deep Water-Table Collapse</td>
+            <td><span class="badge badge-rust">Drought Hub</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">08</span></td>
+            <td><strong style="color: #fff;">Solapur</strong></td>
+            <td>Maharashtra</td>
+            <td>1,489,500 ha</td>
+            <td>734,323 ha</td>
+            <td><strong class="vuln-high">49.30%</strong></td>
+            <td>Sugarcane Over-Irrigation & Black Soil Cracking</td>
+            <td><span class="badge badge-gold">Moderate-High</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">09</span></td>
+            <td><strong style="color: #fff;">Bellary</strong></td>
+            <td>Karnataka</td>
+            <td>844,700 ha</td>
+            <td>369,978 ha</td>
+            <td><strong class="vuln-high">43.80%</strong></td>
+            <td>Iron-Ore Mining Overburden & Rainshadow Drought</td>
+            <td><span class="badge badge-gold">Moderate</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge">10</span></td>
+            <td><strong style="color: #fff;">Koraput</strong></td>
+            <td>Odisha</td>
+            <td>880,700 ha</td>
+            <td>362,848 ha</td>
+            <td><strong class="vuln-high">41.20%</strong></td>
+            <td>Podu (Slash & Burn) & Torrential Sloped Runoff</td>
+            <td><span class="badge badge-gold">Moderate</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 5: INTERACTIVE TIMELINE (2000–2030 LDN TARGET)
+       ========================================================================= -->
+  <section id="timeline" class="timeline-section">
+    <div class="section-header">
+      <span class="section-eyebrow">⏳ Chronological Milestones</span>
+      <h2>Decadal Policy & Geospatial Timeline</h2>
+      <p>
+        Track key national milestones, from the baseline ISRO Space Applications Centre Atlases to international commitments at UNCCD COP14 and the 2030 Land Degradation Neutrality target.
+      </p>
+    </div>
+
+    <div class="timeline-wrapper">
+      <div class="timeline-track">
+        <div class="timeline-progress-bar"></div>
+      </div>
+
+      <div class="timeline-nodes">
+        <!-- Node 1: 2003 -->
+        <div class="timeline-node left">
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2003 • MILESTONE 01</span>
+              <h4>ISRO SAC 1st National Atlas Release</h4>
+              <p>
+                Space Applications Centre (Ahmedabad) publishes the first standardized 1:500,000 national desertification atlas utilizing IRS-1C/1D LISS-III sensor data, establishing India's first baseline inventory of degraded lands.
+              </p>
+            </div>
+          </div>
+          <div class="node-marker"></div>
+          <div class="node-empty"></div>
+        </div>
+
+        <!-- Node 2: 2007 -->
+        <div class="timeline-node right">
+          <div class="node-empty"></div>
+          <div class="node-marker"></div>
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2007 • MILESTONE 02</span>
+              <h4>National Action Programme to Combat Desertification (NAPCD)</h4>
+              <p>
+                MoEFCC launches comprehensive inter-sectoral programs emphasizing community-led micro-watersheds, Joint Forest Management (JFM), and sand dune stabilization along arid agrarian borders.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 3: 2011 -->
+        <div class="timeline-node left">
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2011 • MILESTONE 03</span>
+              <h4>ISRO SAC 2nd Atlas Update (29.32% Degraded)</h4>
+              <p>
+                Second decadal assessment reveals desertification increased to 96.4 million hectares (29.32% of TGA). High-resolution AWiFS satellite sensors identify severe water erosion across peninsular plateaus.
+              </p>
+            </div>
+          </div>
+          <div class="node-marker"></div>
+          <div class="node-empty"></div>
+        </div>
+
+        <!-- Node 4: 2015 -->
+        <div class="timeline-node right">
+          <div class="node-empty"></div>
+          <div class="node-marker"></div>
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2015 • MILESTONE 04</span>
+              <h4>UN Sustainable Development Goal 15.3</h4>
+              <p>
+                Adoption of the 2030 Agenda for Sustainable Development. Target 15.3 commits nations to combat desertification, restore degraded land and soil, and strive to achieve a Land Degradation-Neutral world.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 5: 2018–2021 -->
+        <div class="timeline-node left">
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2018–2021 • MILESTONE 05</span>
+              <h4>ISRO SAC 3rd Atlas: 97.85 Million Hectares</h4>
+              <p>
+                The comprehensive 3rd edition reveals that 97.85M ha (29.77% of TGA) is degraded. Western Rajasthan, Maharashtra, and Gujarat account for over 50% of national degradation.
+              </p>
+            </div>
+          </div>
+          <div class="node-marker"></div>
+          <div class="node-empty"></div>
+        </div>
+
+        <!-- Node 6: 2019 -->
+        <div class="timeline-node right">
+          <div class="node-empty"></div>
+          <div class="node-marker"></div>
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2019 • MILESTONE 06</span>
+              <h4>UNCCD COP14 in New Delhi: The 26M Hectare Pledge</h4>
+              <p>
+                India hosts the 14th Conference of Parties to UNCCD. The Prime Minister of India announces an ambitious upgrade in India's restoration commitment from 21 million to 26 million hectares by 2030.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 7: 2023–2024 -->
+        <div class="timeline-node left">
+          <div class="node-content">
+            <div class="node-card">
+              <span class="node-year-badge">2023–2024 • MILESTONE 07</span>
+              <h4>Great Green Wall of Aravalli & Mission LiFE</h4>
+              <p>
+                Inauguration of a 1,400km long and 5km wide ecological green corridor extending from Porbandar in Gujarat to Panipat in Haryana, designed as an impenetrable green buffer halting Thar desertification eastward.
+              </p>
+            </div>
+          </div>
+          <div class="node-marker"></div>
+          <div class="node-empty"></div>
+        </div>
+
+        <!-- Node 8: 2030 -->
+        <div class="timeline-node right">
+          <div class="node-empty"></div>
+          <div class="node-marker"></div>
+          <div class="node-content">
+            <div class="node-card" style="border-color: var(--emerald-bright);">
+              <span class="node-year-badge" style="color: #81C784;">2030 • THE TARGET HORIZON</span>
+              <h4 style="color: #81C784;">Achieving Land Degradation Neutrality (LDN)</h4>
+              <p>
+                National benchmark to restore 26M hectares of degraded landscapes, sequester an additional 2.5–3 billion tonnes of CO2 equivalent, and achieve hydrological balance in climate-vulnerable agro-ecosystems.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 6: CASE STUDIES (THAR, LADAKH, DECCAN)
+       ========================================================================= -->
+  <section id="cases" class="cases-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🔬 Field Investigations</span>
+      <h2>Regional Case Studies</h2>
+      <p>
+        Explore how three ecologically contrasting biomes—the Thar Subtropical Desert, the Ladakh Cold Desert, and the Deccan Plateau—experience degradation and engineer high-impact ecological remedies.
+      </p>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="cases-tabs-container">
+      <button class="case-tab-btn active" data-case="thar">
+        🐪 Thar Desert (Rajasthan/Gujarat)
+      </button>
+      <button class="case-tab-btn" data-case="ladakh">
+        ❄️ Cold Desert (Ladakh Cryosphere)
+      </button>
+      <button class="case-tab-btn" data-case="deccan">
+        🌾 Deccan Plateau (Maharashtra/Karnataka)
+      </button>
+    </div>
+
+    <!-- Case 1: Thar Desert -->
+    <div id="case-thar" class="case-detail-panel active">
+      <div class="case-media-side">
+        <div class="case-view-switch">
+          <button class="case-switch-btn active" data-img="photo-thar" data-canvas="canvas-case-thar">📷 Field Photo</button>
+          <button class="case-switch-btn" data-img="photo-thar" data-canvas="canvas-case-thar">📐 GIS Schematic</button>
+        </div>
+        <img id="photo-thar" src="assets/thar_shelterbelt.jpg" alt="Thar Khejri Shelterbelt & Dunes" class="case-photo-img">
+        <canvas id="canvas-case-thar" class="case-canvas-art" style="z-index: 1;"></canvas>
+        <div class="case-media-content">
+          <span class="case-badge-pill">ARID DESERT STABILIZATION</span>
+          <h3 class="case-media-title">Thar Desert: Dune Encroachment & Shelterbelts</h3>
+        </div>
+      </div>
+
+      <div class="case-info-side">
+        <div class="case-challenge-box">
+          <h5>The Ecological Crisis:</h5>
+          <p>
+            Severe wind erosion scours 18–35 tonnes of topsoil per hectare annually. High summer gale winds (40–60 km/h) migrate barchan dunes toward fertile agricultural basins in Haryana and Delhi.
+          </p>
+        </div>
+
+        <div class="case-solution-box">
+          <h5>The Remediation Strategy:</h5>
+          <p>
+            Three-tier shelterbelt plantations along canal banks and micro-windbreaks. Deep-rooted indigenous <em>Prosopis cineraria</em> (Khejri) and <em>Tecomella undulata</em> anchor the sand mantle, while micro-catchments trap sparse monsoonal moisture.
+          </p>
+        </div>
+
+        <ul class="case-features-list">
+          <li><strong>CAZRI Dune Fixation:</strong> Checkerboard brushwood fences using <em>Calligonum polygonoides</em>.</li>
+          <li><strong>Indira Gandhi Nahar Project (IGNP):</strong> 650km canal greening stabilized over 180,000 hectares.</li>
+          <li><strong>Agroforestry Integration:</strong> Khejri increases crop yield beneath its canopy by 15–20% via nitrogen fixation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Case 2: Cold Desert Ladakh -->
+    <div id="case-ladakh" class="case-detail-panel">
+      <div class="case-media-side">
+        <div class="case-view-switch">
+          <button class="case-switch-btn active" data-img="photo-ladakh" data-canvas="canvas-case-ladakh">📷 Field Photo</button>
+          <button class="case-switch-btn" data-img="photo-ladakh" data-canvas="canvas-case-ladakh">📐 GIS Schematic</button>
+        </div>
+        <img id="photo-ladakh" src="assets/ladakh_ice_stupa.jpg" alt="Ladakh Ice Stupa Artificial Glacier" class="case-photo-img">
+        <canvas id="canvas-case-ladakh" class="case-canvas-art" style="z-index: 1;"></canvas>
+        <div class="case-media-content">
+          <span class="case-badge-pill">HIGH-ALTITUDE CRYOSPHERE</span>
+          <h3 class="case-media-title">Ladakh Cold Desert: Glacial Retreat & Ice Stupas</h3>
+        </div>
+      </div>
+
+      <div class="case-info-side">
+        <div class="case-challenge-box">
+          <h5>The Ecological Crisis:</h5>
+          <p>
+            Rainshadow precipitation (&lt;100mm/year) and rapid glacial retreat leave high-altitude mountain soils parched. Spring planting season faces acute water deficits before natural glaciers melt in late June.
+          </p>
+        </div>
+
+        <div class="case-solution-box">
+          <h5>The Remediation Strategy:</h5>
+          <p>
+            Artificial Conical Glaciers (<strong>Ice Stupas</strong>), pioneered by Sonam Wangchuk and HIAL. Unused winter stream water is piped downhill and sprayed vertically, freezing into 30m high ice towers that slowly melt from April to June.
+          </p>
+        </div>
+
+        <ul class="case-features-list">
+          <li><strong>Ice Stupa Water Storage:</strong> A single stupa stores 2 to 5 million liters of freshwater.</li>
+          <li><strong>Seabuckthorn (Hippophae):</strong> Nitrogen-fixing thorny shrubs hold scree gravel and generate high-value berries.</li>
+          <li><strong>Afforestation Oases:</strong> Over 150,000 willow and poplar saplings raised on formerly barren gravel fans.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Case 3: Deccan Plateau -->
+    <div id="case-deccan" class="case-detail-panel">
+      <div class="case-media-side">
+        <div class="case-view-switch">
+          <button class="case-switch-btn active" data-img="photo-deccan" data-canvas="canvas-case-deccan">📷 Field Photo</button>
+          <button class="case-switch-btn" data-img="photo-deccan" data-canvas="canvas-case-deccan">📐 GIS Schematic</button>
+        </div>
+        <img id="photo-deccan" src="assets/deccan_watershed.jpg" alt="Deccan Plateau Watershed" class="case-photo-img">
+        <canvas id="canvas-case-deccan" class="case-canvas-art" style="z-index: 1;"></canvas>
+        <div class="case-media-content">
+          <span class="case-badge-pill">SEMI-ARID WATERSHED MANAGEMENT</span>
+          <h3 class="case-media-title">Deccan Plateau: Black Soil Cracking & IWMP</h3>
+        </div>
+      </div>
+
+      <div class="case-info-side">
+        <div class="case-challenge-box">
+          <h5>The Ecological Crisis:</h5>
+          <p>
+            Regur black cotton soils shrink and crack deeply in summer, then erode rapidly during erratic cloudbursts. Water-intensive sugarcane monoculture caused severe salinization and subsoil compaction across Marathwada.
+          </p>
+        </div>
+
+        <div class="case-solution-box">
+          <h5>The Remediation Strategy:</h5>
+          <p>
+            Integrated Watershed Management Programme (IWMP) and continuous contour trenching (CCT) that harvest every drop of rain on ridge-to-valley slopes, recharging deep basalt aquifers.
+          </p>
+        </div>
+
+        <ul class="case-features-list">
+          <li><strong>Contour Bunding & Vetiver Grass:</strong> Roots penetrate 3m deep, halting sheet erosion by 75%.</li>
+          <li><strong>Farm Ponds & Check Dams:</strong> Created over 200,000 decentralized groundwater recharge percolation points.</li>
+          <li><strong>Horticulture Shift:</strong> Transition to drought-hardy pomegranate, custard apple, and drumstick silvopasture.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 7: TECH & RESTORATION SIMULATOR (CALCULATOR)
+       ========================================================================= -->
+  <section id="restoration" class="calc-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🌱 Ecological Engineering & Carbon Sequestration</span>
+      <h2>Restoration & Tree Cover Simulator</h2>
+      <p>
+        Simulate large-scale agro-climatic interventions across India's vulnerable biomes. Calculate sapling densities, projected carbon capture, soil loss averted, and hydrological recharge to attain Land Degradation Neutrality (LDN).
+      </p>
+    </div>
+
+    <div class="calc-grid">
+      <!-- Input Controls Pane -->
+      <div class="calc-inputs-pane">
+        <!-- Area Slider -->
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="calc-area-slider" class="form-label">Intervention Land Area (Hectares)</label>
+            <span id="calc-area-val" class="form-val-display">250 Hectares</span>
+          </div>
+          <input type="range" id="calc-area-slider" min="10" max="5000" value="250" step="10" class="calc-slider">
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">
+            <span>10 ha (Micro-catchment)</span>
+            <span>2,500 ha</span>
+            <span>5,000 ha (Block Scale)</span>
+          </div>
+        </div>
+
+        <!-- Bio-Climatic Zone Selection -->
+        <div class="form-group">
+          <label class="form-label">Agro-Climatic Target Zone</label>
+          <div class="options-grid">
+            <div class="option-radio-btn active" data-zone="thar">
+              <span class="option-title">🐪 Thar Arid Desert</span>
+              <span class="option-desc">Rajasthan & Gujarat (18.5 t/ha/yr erosion)</span>
+            </div>
+            <div class="option-radio-btn" data-zone="deccan">
+              <span class="option-title">🌾 Deccan Semi-Arid</span>
+              <span class="option-desc">Maharashtra & Karnataka (Regur cracking)</span>
+            </div>
+            <div class="option-radio-btn" data-zone="ladakh">
+              <span class="option-title">❄️ Ladakh Cryosphere</span>
+              <span class="option-desc">Trans-Himalayan Cold Desert (Alpine scree)</span>
+            </div>
+            <div class="option-radio-btn" data-zone="plains">
+              <span class="option-title">🌊 Indo-Gangetic Plains</span>
+              <span class="option-desc">Alluvial & Saline Sodic Basins (Alkaline crusts)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remediation Technique -->
+        <div class="form-group">
+          <label class="form-label">Remediation Methodology</label>
+          <div class="options-grid">
+            <div class="option-radio-btn active" data-tech="shelterbelt">
+              <span class="option-title">🌳 Windbreak Shelterbelts</span>
+              <span class="option-desc">1,000 trees/ha • 72% wind erosion cut</span>
+            </div>
+            <div class="option-radio-btn" data-tech="miyawaki">
+              <span class="option-title">🌿 Miyawaki Ultra-Dense</span>
+              <span class="option-desc">25,000 trees/ha • 92% topsoil lock</span>
+            </div>
+            <div class="option-radio-btn" data-tech="agroforestry">
+              <span class="option-title">🌾 Silvopasture & Contour</span>
+              <span class="option-desc">650 trees/ha • Fodder & soil organic carbon</span>
+            </div>
+            <div class="option-radio-btn" data-tech="halophyte">
+              <span class="option-title">🌱 Halophyte Bio-Drainage</span>
+              <span class="option-desc">1,800 plants/ha • Salt extraction & hardpan break</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-action-bar">
+          <button id="calc-export-btn" class="btn btn-primary" style="font-size: 0.88rem; width: 100%;">
+            <span>📥 Export Technical Restoration Dossier</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Output Results Pane -->
+      <div class="calc-results-pane">
+        <div class="results-hero-stat">
+          <div id="calc-result-trees" class="results-hero-val">250,000</div>
+          <div class="results-hero-label">Target Saplings & Biomass Required</div>
+        </div>
+
+        <div class="results-metrics-grid">
+          <div class="metric-item-box">
+            <div class="metric-title">Annual Carbon Sequestration</div>
+            <div id="calc-result-carbon" class="metric-val">5,500.0 t</div>
+            <div style="font-size: 0.7rem; color: var(--sand-gold); margin-top: 2px;">tCO2e per year</div>
+          </div>
+
+          <div class="metric-item-box">
+            <div class="metric-title">Topsoil Erosion Averted</div>
+            <div id="calc-result-soil" class="metric-val">3,330 t/yr</div>
+            <div style="font-size: 0.7rem; color: #81C784; margin-top: 2px;">Metric tonnes conserved</div>
+          </div>
+
+          <div class="metric-item-box">
+            <div class="metric-title">Aquifer Recharge Increment</div>
+            <div id="calc-result-water" class="metric-val">480.0 L L/yr</div>
+            <div style="font-size: 0.7rem; color: #4FC3F7; margin-top: 2px;">Lakh Liters annually</div>
+          </div>
+
+          <div class="metric-item-box">
+            <div class="metric-title">Projected Time to LDN Neutrality</div>
+            <div id="calc-result-years" class="metric-val">~6 Years</div>
+            <div style="font-size: 0.7rem; color: var(--sand-light); margin-top: 2px;">Canopy maturation index</div>
+          </div>
+        </div>
+
+        <!-- Species Recommendations -->
+        <div class="species-recommendations">
+          <h5>Recommended Indigenous Bio-Shield Species:</h5>
+          <div id="calc-species-list" class="species-tags-list">
+            <!-- Dynamically populated by calculator.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 8: ECO-RESTORATION GAME & LIVE SCOREBOARD
+       ========================================================================= -->
+  <section id="eco-game" class="game-section">
+    <div class="section-header">
+      <span class="section-eyebrow">🎮 Tactical Eco-Simulation</span>
+      <h2>Mission LDN 2030: The Desertification Battle</h2>
+      <p>
+        Assume command of the National Eco-Restoration Authority. Allocate eco-credits, plant climate-resilient vegetative shields, combat sandstorms and severe heatwaves, and secure Land Degradation Neutrality before cycle 12!
+      </p>
+    </div>
+
+    <div class="game-dashboard">
+      <!-- Main Game Card -->
+      <div class="game-main-card">
+        <!-- Game HUD -->
+        <div class="game-hud-bar">
+          <div class="hud-item">
+            <span class="hud-label">Eco-Budget</span>
+            <span id="game-budget" class="hud-val gold">₹ 1,200</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">Cycle / Season</span>
+            <span id="game-turn" class="hud-val">Cycle 1 / 12</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">Score</span>
+            <span id="game-score" class="hud-val green">0</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">LDN Neutrality</span>
+            <span id="game-ldn-pct" class="hud-val">0%</span>
+          </div>
+          <div class="hud-item" style="display: none;">
+            <span id="game-carbon">0 t</span>
+            <span id="game-water">0 kL</span>
+          </div>
+        </div>
+
+        <!-- Weather / Monsoon Alerts -->
+        <div id="game-weather-banner" class="game-weather-banner">
+          <strong>🌦️ Baseline Conditions:</strong> Mild pre-monsoon dry spell. Select a tool and deploy onto degraded grid tiles.
+        </div>
+
+        <!-- 6x6 Terraced Grid Map -->
+        <div class="game-grid-container">
+          <div id="game-grid" style="display: grid; gap: 8px;">
+            <!-- 36 Interactive Tiles rendered dynamically by game.js -->
+          </div>
+        </div>
+
+        <!-- Intervention Tools -->
+        <div class="game-tools-section">
+          <h4>Intervention Arsenal (Select Active Shield):</h4>
+          <div class="game-tools-grid">
+            <div class="game-tool-card active" data-tool="shelterbelt">
+              <div class="tool-header-row">
+                <span class="tool-title">🌳 Khejri Shelterbelt</span>
+                <span class="tool-cost">₹100</span>
+              </div>
+              <p class="tool-desc">Effective on Shifting Dunes & Scrub. Anchors dunes and halts wind scour.</p>
+            </div>
+
+            <div class="game-tool-card" data-tool="bund">
+              <div class="tool-header-row">
+                <span class="tool-title">🌾 Contour Bund & Vetiver</span>
+                <span class="tool-cost">₹80</span>
+              </div>
+              <p class="tool-desc">Effective on Cracked Gullies. Traps topsoil runoff and boosts percolation.</p>
+            </div>
+
+            <div class="game-tool-card" data-tool="stupa">
+              <div class="tool-header-row">
+                <span class="tool-title">💧 Farm Pond / Ice Stupa</span>
+                <span class="tool-cost">₹140</span>
+              </div>
+              <p class="tool-desc">Stores millions of liters for deep aquifer recharge and drought buffer.</p>
+            </div>
+
+            <div class="game-tool-card" data-tool="halophyte">
+              <div class="tool-header-row">
+                <span class="tool-title">🌿 Halophyte Bio-Drainage</span>
+                <span class="tool-cost">₹90</span>
+              </div>
+              <p class="tool-desc">Effective on Saline Crusts. Bio-extracts toxic minerals and softens hardpan.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="game-actions-bar">
+          <button id="game-reset-btn" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.84rem;">
+            🔄 Reset Mission
+          </button>
+          <button id="game-next-turn-btn" class="btn btn-primary" style="padding: 0.6rem 1.75rem; font-size: 0.92rem;">
+            ⏩ Advance Seasonal Cycle (+Grant)
+          </button>
+        </div>
+      </div>
+
+      <!-- Side Leaderboard & Scoreboard Card -->
+      <div class="leaderboard-card">
+        <div class="leaderboard-header">
+          <h3>🏆 National Restoration Leaderboard</h3>
+          <p>Top Eco-Commanders registered across historical restoration simulations.</p>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Commander</th>
+                <th>Title</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <!-- Dynamically rendered by game.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); padding: 1rem; border: 1px dashed var(--border-subtle); font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
+          <strong style="color: var(--sand-gold);">💡 Scoring Tactics:</strong>
+          Match intervention tools to tile degradation vectors for +250 pts. Restored tiles generate passive seasonal carbon & water credits. Preserve remaining budget for end-of-mission efficiency multipliers!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Victory / Game Over Modal -->
+  <div id="game-modal" class="game-modal-overlay">
+    <div class="game-modal-box">
+      <div class="modal-hero-icon">🏆</div>
+      <h3 class="modal-title">Mission Completed!</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem;">National Land Degradation Neutrality Assessment</p>
+      
+      <div id="modal-final-score" class="modal-score-badge">0</div>
+
+      <div id="modal-stats-summary" class="modal-stats-summary">
+        <!-- Rendered by game.js -->
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="player-name-input" style="display: block; font-size: 0.82rem; color: var(--sand-light); margin-bottom: 0.5rem; text-align: left;">
+          Enter Eco-Commander Name for Leaderboard:
+        </label>
+        <input type="text" id="player-name-input" placeholder="e.g. Ranger Sarthak" maxlength="18" style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); color: #fff; font-size: 1rem; outline: none;">
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button id="modal-submit-score-btn" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+          💾 Save to Leaderboard
+        </button>
+        <button id="modal-play-again-btn" class="btn btn-secondary" style="padding: 0.75rem 1.25rem;">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="game-toast" class="game-toast"></div>
+
+  <!-- Floating Back to Top Button -->
+  <button id="back-to-top" class="back-to-top-btn" title="Scroll to top" aria-label="Back to top">↑</button>
+
+  <!-- =========================================================================
+       FOOTER & DEVELOPER CREDITS
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h4>BHUMI GIS • Desertification in India</h4>
+        <p>
+          An interactive, high-precision geospatial and ecological research portal examining decadal land degradation (2000–present) across the Indian subcontinent. Developed using official data from ISRO Space Applications Centre (SAC), MoEFCC, and UNCCD.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Geospatial Sections</h5>
+        <ul>
+          <li><a href="#hero">Overview & Telemetry</a></li>
+          <li><a href="#gis-map">ISRO GIS Heatmap</a></li>
+          <li><a href="#trends">Decadal Analytics Graph</a></li>
+          <li><a href="#drivers">Morphological Drivers</a></li>
+          <li><a href="#vulnerability">Top 10 Degraded Districts</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Scientific Tools</h5>
+        <ul>
+          <li><a href="#cases">Regional Case Studies</a></li>
+          <li><a href="#restoration">LDN Tree Cover Simulator</a></li>
+          <li><a href="#eco-game">Mission LDN 2030 Game</a></li>
+          <li><a href="#timeline">National Policy Timeline</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Developer Credits Bar -->
+    <div class="dev-credit" style="text-align: center; padding: 1.5rem 0 1rem; border-top: 1px solid rgba(255, 255, 255, 0.06); font-size: 1.05rem; color: #dfe7d8;">
+      <span>Developed by:</span>
+      <strong style="color: #ffd166; font-size: 1.15em; text-shadow: 0 0 10px rgba(255,209,102,0.8); margin: 0 4px;">Sarthak</strong>
+      <span style="margin: 0 6px; color: rgba(255,255,255,0.4);">•</span>
+      <strong style="color: #7dc2ff; font-size: 1.15em; text-shadow: 0 0 10px rgba(125,194,255,0.7); margin: 0 4px;">Yugesh</strong>
+      <span style="margin: 0 6px; color: rgba(255,255,255,0.4);">•</span>
+      <strong class="srishti-name" style="font-size: 1.15em; margin: 0 4px;">Srishti</strong>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 BHUMI GIS Initiative • Land Degradation Neutrality (LDN) Research Project</div>
+      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end;">
+        <button id="replay-sand-btn" class="sand-flow-btn" title="Replay opening sand flow animation">
+          🌪️ Replay Intro
+        </button>
+        <button id="leaf-gust-btn" class="leaf-breeze-badge" title="Trigger a leaf gust burst">
+          🍃 Leaf Gust
+        </button>
+        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+          Coordinates: 20.5937° N, 78.9629° E • WGS84 Geodetic Datum
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       APPLICATION SCRIPTS (LOADED IN ORDER)
+       ========================================================================= -->
+  <!-- Flow effects FIRST so sand intro runs before anything else -->
+  <script src="js/flow-effects.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/tilt.js"></script>
+  <script src="js/map-gis.js"></script>
+  <script src="js/analytics-graph.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/scroll-effects.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
